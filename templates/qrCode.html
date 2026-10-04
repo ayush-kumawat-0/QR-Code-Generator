@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Studio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/[email protected]/dist/css/intlTelInput.css"> -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="shell">
+
+        <header>
+            <div class="brand">
+                <div class="logo">⌁</div>
+                <div class="brand-name">QR Studio</div>
+            </div>
+
+            <div class="header-actions">
+                <button class="history-btn" id="historyBtn">
+                    <span>Recent</span> ↺
+                </button>
+
+                <button class="theme-btn" id="themeBtn">
+                    <span class="theme-icon" id="themeIcon">☾</span>
+                    <span id="themeLabel">Dark</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="eyebrow">Simple QR generator</div>
+            <h1>Make a QR code.<br><span>Keep it simple.</span></h1>
+            <p>
+                Create a clean QR code from a website, message, or WhatsApp link.
+                Customize only what you actually need.
+            </p>
+        </section>
+
+        <main class="workspace">
+
+            <!-- LEFT -->
+            <section class="card panel">
+
+                <div class="panel-head">
+                    <div>
+                        <div class="title">Create your QR</div>
+                        <div class="subtitle">Choose what the QR code should contain.</div>
+                    </div>
+                </div>
+
+                <!-- Only useful content types -->
+                <div class="types">
+                    <button class="type-btn active" data-mode="url">Website</button>
+                    <button class="type-btn" data-mode="whatsapp">WhatsApp</button>
+                    <button class="type-btn" data-mode="text">Text</button>
+                </div>
+
+                <!-- URL -->
+                <div class="mode active" id="urlMode">
+                    <div class="field">
+                        <label>Website URL</label>
+
+                        <div class="input-row">
+                            <input id="urlInput" type="url" placeholder="https://example.com">
+                            <button class="paste" id="pasteBtn">Paste</button>
+                            <button class="primary" id="generateBtn">Generate QR</button>
+                        </div>
+
+                        <div class="helper">
+                            <span>Enter the page people should open.</span>
+                            <span id="urlCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WhatsApp -->
+                <!-- WhatsApp -->
+                <div class="mode" id="whatsappMode">
+                    <div class="field">
+                        <label>WhatsApp Number</label>
+
+                        <div class="two-fields">
+                            <div class="phone-input">
+                                <span class="country-code">+91</span>
+
+                                <input id="phoneInput" type="tel" placeholder="98765 43210" inputmode="numeric"
+                                    maxlength="10">
+                            </div>
+
+                            <input id="messageInput" type="text" placeholder="Write your message...">
+                        </div>
+
+                        <div class="helper">
+                            <span>Enter a 10-digit WhatsApp number.</span>
+                        </div>
+
+                        <button class="primary" id="generateWhatsappBtn">
+                            Generate QR
+                        </button>
+                    </div>
+                </div>
+                <!-- TEXT -->
+                <div class="mode" id="textMode">
+    <div class="field">
+        <label>Text</label>
+
+        <textarea
+            id="textInput"
+            placeholder="Write the text you want to encode..."
+        ></textarea>
+
+        <div class="helper">
+            <span>Useful for short notes or plain text.</span>
+            <span id="textCount">0</span>
+        </div>
+
+        <button class="primary" id="generateTextBtn">
+            Generate QR
+        </button>
+    </div>
+</div>
+
+                <!-- Minimal customization -->
+                <div class="customize open" id="customize">
+                    <div class="customize-head" id="customizeHead">
+                        <span>Customize appearance</span>
+                        <span class="chevron">⌄</span>
+                    </div>
+
+                    <div class="customize-body">
+
+                        <div class="option-grid">
+
+                            <div class="option">
+                                <label>QR Color</label>
+                                <div class="color-row">
+                                    <input type="color" id="bgColor" value="#ffffff">
+                                    <span class="hex" id="bgHex">#FFFFFF</span>
+                                </div>
+
+                            </div>
+
+                            <div class="option">
+                                <label>Background</label>
+                                <div class="color-row">
+                                    <input type="color" id="fgColor" value="#25231f">
+                                    <span class="hex" id="fgHex">#25231F</span>
+                                </div>
+                            </div>
+
+                            <div class="option">
+                                <label>Dot style</label>
+                                <select id="dotStyle">
+                                    <option value="square">Square</option>
+                                    <option value="rounded">Rounded</option>
+                                    <option value="soft">Soft</option>
+                                </select>
+                            </div>
+
+                            <div class="option">
+                                <label>Center logo</label>
+
+                                <div class="logo-options">
+
+                                    <button type="button" class="logo-btn active" data-logo="none">
+                                        <span class="logo-none">×</span>
+                                    </button>
+
+                                    <button type="button" class="logo-btn" data-logo="location">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z" />
+                                            <circle cx="12" cy="9" r="2.5" />
+                                        </svg>
+                                    </button>
+
+                                    <button type="button" class="logo-btn" data-logo="whatsapp">
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3z" />
+                                            <path
+                                                d="M8.5 8.2c.2-.4.4-.4.7-.4h.5c.2 0 .4.1.5.4l.7 1.6c.1.2.1.4-.1.6l-.5.6c-.1.1-.1.3 0 .5.5.9 1.2 1.6 2.1 2.1.2.1.4.1.5 0l.6-.5c.2-.2.4-.2.6-.1l1.6.7c.3.1.4.3.4.5v.5c0 .3-.1.5-.4.7-.4.3-1 .5-1.5.5-1 0-2.4-.6-3.7-1.9-1.3-1.3-2-2.7-2-3.7 0-.6.2-1.1.5-1.6z" />
+                                        </svg>
+                                    </button>
+
+                                    <button type="button" class="logo-btn" data-logo="website">
+                                        <svg viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="9" />
+                                            <path
+                                                d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9M12 3c-2.5 2.5-3.8 5.5-3.8 9s1.3 6.5 3.8 9" />
+                                        </svg>
+                                    </button>
+
+                                    <button type="button" class="logo-btn" data-logo="email">
+                                        <svg viewBox="0 0 24 24">
+                                            <rect x="3" y="5" width="18" height="14" rx="2" />
+                                            <path d="m4 7 8 6 8-6" />
+                                        </svg>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- RIGHT -->
+            <section class="card preview">
+
+                <div class="panel-head">
+                    <div>
+                        <div class="title">Preview</div>
+                        <div class="subtitle">Your generated QR code will appear here.</div>
+                    </div>
+
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        Ready
+                    </div>
+                </div>
+
+                <div class="qr-area">
+                    <div>
+                        <div class="qr-paper" id="qrPaper">
+                            <!-- Placeholder only.
+                     Your Python/Flask backend should replace this
+                     with the generated QR image. -->
+                            <div class="qr-placeholder">
+                                <div class="qr-placeholder-inner">
+                                    <div class="qr-placeholder-mark"></div>
+                                    <span>Python-generated QR appears here</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="preview-caption" style="margin-top:16px">
+                            <strong id="previewTitle">Nothing generated yet</strong>
+                            <p id="previewText">Your normal Python-generated QR will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payload">
+                    <div>
+                        <small>Encoded content</small>
+                        <span id="payloadText">—</span>
+                    </div>
+
+                    <button class="icon-btn" id="copyPayload" title="Copy content">⧉</button>
+                </div>
+
+                <div class="exports">
+                    <button class="primary" id="downloadBtn">↓ Download PNG</button>
+                    <button class="secondary" id="copyImageBtn">Copy image</button>
+                </div>
+
+            </section>
+
+        </main>
+
+        <footer>
+            QR Studio · Clean interface for a Python-powered QR generator
+        </footer>
+
+    </div>
+
+    <!-- HISTORY -->
+    <aside class="history-panel" id="historyPanel">
+        <div class="history-head">
+            <div>
+                <div class="title">Recent QR codes</div>
+                <div class="subtitle">Saved locally in this browser.</div>
+            </div>
+            <button class="close" id="closeHistory">×</button>
+        </div>
+
+        <div class="history-list" id="historyList">
+            <div class="subtitle" style="text-align:center;margin-top:30px">
+                No recent QR codes.
+            </div>
+        </div>
+
+        <button class="clear-history" id="clearHistory">Clear history</button>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/[email protected]/dist/js/intlTelInput.min.js"></script> -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>
