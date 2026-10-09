@@ -815,97 +815,42 @@ footer {
 }
 
 
-.logo-options {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+.logo-upload {
+    display: flex;
+    align-items: center;
     gap: 8px;
-}
-
-.logo-btn {
     width: 100%;
-    height: 42px;
-    padding: 0;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    background: var(--input);
+    padding: 9px 10px;
+    border: 1px dashed var(--border);
+    border-radius: 9px;
     color: var(--muted);
-    display: grid;
-    place-items: center;
-    transition: .2s;
+    font-size: 11px;
+    cursor: pointer;
 }
 
-.logo-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.logo-btn.active {
-    border-color: var(--accent);
-    background: rgba(184, 92, 61, .10);
-    color: var(--accent);
-}
-
-.logo-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-.logo-none {
-    width: 20px;
-    height: 20px;
-    border: 1.6px solid currentColor;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 16px;
-    line-height: 1;
-}
-
-/* .two-fields {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 10px;
-}
-
-.two-fields .small-input {
-    width: 100%;
-    min-height: 46px;
-    padding: 0 14px;
-
-    border: 1px solid var(--border);
-    border-radius: 10px;
-
-    background: var(--card);
+.logo-upload:hover {
     color: var(--text);
-
-    outline: none;
-
-    font: inherit;
-    font-size: 14px;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
-}
-
-.two-fields .small-input::placeholder {
-    color: var(--muted);
-}
-
-.two-fields .small-input:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(37, 35, 31, 0.08);
 }
 
-.two-fields .small-input:hover {
-    border-color: var(--muted);
-} */
+.logo-upload input {
+    display: none;
+}
+
+.upload-btn {
+    padding: 7px 10px;
+    background: var(--accent);
+    color: #fffaf5;
+    border-radius: 7px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.upload-btn:hover {
+    background: var(--accent-dark);
+}
 
 .two-fields {
     display: grid;
@@ -980,6 +925,40 @@ footer {
 #messageInput:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px rgba(37, 35, 31, 0.08);
+}
+
+
+.logo-preview {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 10px;
+    color: var(--text);
+    max-width: 150px;
+}
+
+.logo-preview span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.remove-logo {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+}
+
+.remove-logo:hover {
+    color: var(--danger);
 }
 
 @media (max-width: 600px) {

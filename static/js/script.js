@@ -3,6 +3,31 @@ const body = document.body;
 const themeBtn = document.getElementById("themeBtn");
 const themeIcon = document.getElementById("themeIcon");
 const themeLabel = document.getElementById("themeLabel");
+const logoInput = document.getElementById("logoInput");
+const qrPaper = document.getElementById("qrPaper");
+
+
+const logoPreview = document.getElementById("logoPreview");
+const logoName = document.getElementById("logoName");
+const removeLogo = document.getElementById("removeLogo");
+
+logoInput.addEventListener("change", () => {
+    const file = logoInput.files[0];
+
+    if (file) {
+        logoName.textContent = file.name;
+        logoPreview.style.display = "flex";
+    } else {
+        logoPreview.style.display = "none";
+        logoName.textContent = "";
+    }
+});
+
+removeLogo.addEventListener("click", () => {
+    logoInput.value = "";
+    logoName.textContent = "";
+    logoPreview.style.display = "none";
+});
 
 function applyTheme(theme) {
     const dark = theme === "dark";
@@ -18,12 +43,28 @@ themeBtn.addEventListener("click", () => {
     applyTheme(body.classList.contains("dark") ? "light" : "dark");
 });
 
+// const formData = new FormData();
+
+// formData.append("content", content);
+// formData.append("foreground", foreground);
+// formData.append("background", background);
+// formData.append("dot_style", dotStyle);
+
+// if (logoFile) {
+//     formData.append("logo", logoFile);
+// }
+
+// fetch("/generate", {
+//     method: "POST",
+//     body: formData
+// });
+
 /* CONTENT TYPES */
 
 let currentMode = "url";
 let currentPayload = "";
 let currentQRImage = "";
-let selectedLogo = "none";
+// let selectedLogo = "none";
 
 document.querySelectorAll(".type-btn").forEach(button => {
     button.addEventListener("click", () => {
@@ -100,18 +141,22 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
     }
 
     try {
+        const formData = new FormData();
+
+        formData.append("content", url);
+        formData.append("foreground", fgColor.value);
+        formData.append("background", bgColor.value);
+        formData.append("dot_style", document.getElementById("dotStyle").value);
+
+        const logoFile = logoInput.files[0];
+
+        if (logoFile) {
+            formData.append("logo", logoFile);
+        }
+
         const response = await fetch("/generate", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                content: url,
-                foreground: fgColor.value,
-                background: bgColor.value,
-                dot_style: document.getElementById("dotStyle").value,
-                logo: selectedLogo
-            })
+            body: formData
         });
 
         if (!response.ok) {
@@ -159,19 +204,191 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
 
 
 
-document.querySelectorAll(".logo-btn").forEach(button => {
 
-    button.addEventListener("click", () => {
 
-        document.querySelectorAll(".logo-btn")
-            .forEach(btn => btn.classList.remove("active"));
+document.getElementById("generateWhatsappBtn").addEventListener("click", async () => {
 
-        button.classList.add("active");
+    const number = phoneInput.value;
 
-        selectedLogo = button.dataset.logo;
-    });
+    if (number.length !== 10) {
+        showToast("Enter a valid 10-digit WhatsApp number");
+        return;
+    }
+
+    const phone = "91" + number;
+
+    const message = encodeURIComponent(
+        document.getElementById("messageInput").value.trim()
+    );
+
+    const payload =
+        "https://wa.me/" +
+        phone.replace(/\D/g, "") +
+        (message ? "?text=" + message : "");
+
+    try {
+
+        // const response = await fetch("/generate", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     body: JSON.stringify({
+        //         content: payload,
+        //         foreground: fgColor.value,
+        //         background: bgColor.value,
+        //         dot_style: document.getElementById("dotStyle").value,
+        //         logo: selectedLogo
+        //     })
+        // });
+
+
+        const formData = new FormData();
+
+        formData.append("content", payload);
+        formData.append("foreground", fgColor.value);
+        formData.append("background", bgColor.value);
+        formData.append("dot_style", document.getElementById("dotStyle").value);
+
+        const logoFile = logoInput.files[0];
+
+        if (logoFile) {
+            formData.append("logo", logoFile);
+        }
+
+        const response = await fetch("/generate", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error("QR generation failed");
+        }
+
+        const imageBlob = await response.blob();
+
+        const imageUrl = URL.createObjectURL(imageBlob);
+
+        qrPaper.innerHTML = `
+            <img
+                src="${imageUrl}"
+                alt="Generated WhatsApp QR Code"
+                id="generatedQR"
+                style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    display: block;
+                    margin: 0 auto;
+                "
+            >
+        `;
+
+        currentQRImage = imageUrl;
+
+        setPayload(payload, "WhatsApp QR");
+
+        document.getElementById("previewTitle").textContent =
+            "WhatsApp QR Ready";
+
+        document.getElementById("previewText").textContent =
+            "Scan this QR code to open the WhatsApp conversation.";
+
+        saveHistory(payload, "WhatsApp");
+
+        showToast("WhatsApp QR generated");
+
+    } catch (error) {
+
+        console.error(error);
+        showToast("Failed to generate QR");
+    }
+});
+
+
+
+
+document.getElementById("generateTextBtn").addEventListener("click", async () => {
+
+    console.log("TEXT BUTTON CLICKED");
+
+    const text = document.getElementById("textInput").value.trim();
+
+    console.log("TEXT:", text);
+
+    if (!text) {
+        showToast("Enter some text first");
+        return;
+    }
+
+    try {
+
+        const formData = new FormData();
+
+        formData.append("content", text);
+        formData.append("foreground", fgColor.value);
+        formData.append("background", bgColor.value);
+        formData.append("dot_style", document.getElementById("dotStyle").value);
+
+        const logoFile = logoInput.files[0];
+
+        if (logoFile) {
+            formData.append("logo", logoFile);
+        }
+
+        const response = await fetch("/generate", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error("QR generation failed");
+        }
+
+        const imageBlob = await response.blob();
+
+        const imageUrl = URL.createObjectURL(imageBlob);
+
+        qrPaper.innerHTML = `
+            <img
+                src="${imageUrl}"
+                alt="Generated Text QR Code"
+                id="generatedQR"
+                style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    display: block;
+                "
+            >
+        `;
+
+        currentQRImage = imageUrl;
+
+        setPayload(text, "Text QR");
+
+        document.getElementById("previewTitle").textContent =
+            "Text QR Ready";
+
+        document.getElementById("previewText").textContent =
+            "Scan this QR code to read the encoded text.";
+
+        saveHistory(text, "Text");
+
+        showToast("Text QR generated");
+
+    } catch (error) {
+
+        console.error(error);
+        showToast("Failed to generate QR");
+
+    }
 
 });
+
+
+
+
 
 
 
@@ -225,87 +442,6 @@ document.getElementById("copyImageBtn").addEventListener("click", async () => {
 
 
 
-document.getElementById("generateWhatsappBtn").addEventListener("click", async () => {
-
-    const number = phoneInput.value;
-
-    if (number.length !== 10) {
-        showToast("Enter a valid 10-digit WhatsApp number");
-        return;
-    }
-
-    const phone = "91" + number;
-
-    const message = encodeURIComponent(
-        document.getElementById("messageInput").value.trim()
-    );
-
-    const payload =
-        "https://wa.me/" +
-        phone.replace(/\D/g, "") +
-        (message ? "?text=" + message : "");
-
-    try {
-
-        const response = await fetch("/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                content: payload,
-                foreground: fgColor.value,
-                background: bgColor.value,
-                dot_style: document.getElementById("dotStyle").value,
-                logo: selectedLogo
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error("QR generation failed");
-        }
-
-        const imageBlob = await response.blob();
-
-        const imageUrl = URL.createObjectURL(imageBlob);
-
-        qrPaper.innerHTML = `
-            <img
-                src="${imageUrl}"
-                alt="Generated WhatsApp QR Code"
-                id="generatedQR"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                    display: block;
-                    margin: 0 auto;
-                "
-            >
-        `;
-
-        currentQRImage = imageUrl;
-
-        setPayload(payload, "WhatsApp QR");
-
-        document.getElementById("previewTitle").textContent =
-            "WhatsApp QR Ready";
-
-        document.getElementById("previewText").textContent =
-            "Scan this QR code to open the WhatsApp conversation.";
-
-        saveHistory(payload, "WhatsApp");
-
-        showToast("WhatsApp QR generated");
-
-    } catch (error) {
-
-        console.error(error);
-        showToast("Failed to generate QR");
-    }
-});
-
-
 const phoneInput = document.getElementById("phoneInput");
 
 phoneInput.addEventListener("input", () => {
@@ -314,80 +450,7 @@ phoneInput.addEventListener("input", () => {
         .slice(0, 10);
 });
 
-document.getElementById("generateTextBtn").addEventListener("click", async () => {
 
-    console.log("TEXT BUTTON CLICKED");
-
-    const text = document.getElementById("textInput").value.trim();
-
-    console.log("TEXT:", text);
-
-    if (!text) {
-        showToast("Enter some text first");
-        return;
-    }
-
-    try {
-
-        const response = await fetch("/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                content: text,
-                foreground: fgColor.value,
-                background: bgColor.value,
-                dot_style: document.getElementById("dotStyle").value,
-                logo: selectedLogo
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error("QR generation failed");
-        }
-
-        const imageBlob = await response.blob();
-
-        const imageUrl = URL.createObjectURL(imageBlob);
-
-        qrPaper.innerHTML = `
-            <img
-                src="${imageUrl}"
-                alt="Generated Text QR Code"
-                id="generatedQR"
-                style="
-                    width: 100%;
-                    height: 100%;
-                    object-fit: contain;
-                    display: block;
-                "
-            >
-        `;
-
-        currentQRImage = imageUrl;
-
-        setPayload(text, "Text QR");
-
-        document.getElementById("previewTitle").textContent =
-            "Text QR Ready";
-
-        document.getElementById("previewText").textContent =
-            "Scan this QR code to read the encoded text.";
-
-        saveHistory(text, "Text");
-
-        showToast("Text QR generated");
-
-    } catch (error) {
-
-        console.error(error);
-        showToast("Failed to generate QR");
-
-    }
-
-});
-/* PASTE */
 
 document.getElementById("pasteBtn").addEventListener("click", async () => {
     try {
@@ -518,3 +581,8 @@ function showToast(message) {
         toast.classList.remove("show");
     }, 1800);
 }
+
+
+setTimeout(function() {
+    location.reload();
+}, 900000);
